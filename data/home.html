@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>SAC</title>
+  <!-- <link rel="stylesheet" href="style.css"> -->
+  <script src="script.js"></script>
+</head>
+<body>
+    <div class="contenant">
+        <div class="column">
+            <img class="fit-picture" src="sac.png"></img>
+            <h2 align='left'>Type de bois</h2>
+            <select name="typeBois" id="typeBois" class="choix">
+                <option value="erable">Erable</option>
+                <option value="bouleau">Bouleau</option>
+                <option value="sapin">Sapin</option>
+                <option value="chene">Chêne</option>
+            </select>
+            <h2 align='left'>Caractéristiques</h2>
+            <div class="box">
+                <span>
+                    <p>Bois :</p>
+                    <p type="text">Erable</p>
+                </span> 
+                <span>
+                    <p>Type :</p>
+                    <p type="text">dur</p>
+                </span>
+                <span>
+                    <p>Origine :</p>
+                    <p type="text">US</p>
+                </span>
+                <span>
+                    <p>Temps de séchage : </p>
+                    <p type="text">20s</p>
+                </span>
+                <span>
+                    <p>Température min : </p>
+                    <p type="text">25°C</p>
+                </span>
+            </div>
+        </div>
+        <div class="column">
+            <h2 align='left'>Contrôle du four de séchage</h2>
+            <div class="box">
+                <div>
+                    <p style="margin-top: 3em"><strong>Température du four : </strong></p>
+                    <p class='temperatureFour' id="temp" name="temperature"></p>
+                </div>
+                <button class="demarrer" type="button">Démarrage du four</button>
+                <div class="info">
+                    <span>
+                        <p type="text" class='retourDonnees' id="bois" name="bois">Erable</p>
+                    </span>
+                    <span>
+                        <p type="int" class='retourDonnees' id="tempRestant" name="tempRestant">0s</p>
+                    </span> 
+                    <span>
+                        <p type="int" class='retourDonnees' id="tempsSechage" name="tempsSechage">20s</p>
+                    </span> 
+                    <span>
+                        <p type="int" class='retourDonnees' id="tempMin" name="tempMin">25°C</p>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+    *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    height: 100vh;
+    padding: 1em;
+}
+
+.contenant{
+    display: flex;
+    gap: 1em;
+    height: 85%;
+}
+
+.box{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 2px solid;
+    height: 100%;
+}
+
+.box span{
+    display: flex;
+    justify-content: space-between;
+    height: 2em;
+    margin-right: 2em;
+}
+.box .info span{
+    display: flex;
+    justify-content: space-between;
+    height: 2em;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 1em;
+    width: 500px;
+    height: 60%;
+}
+
+.column select{
+    background-color: #F7C59F;
+    width: 90%;
+    margin-left: 5%;
+}
+
+button{
+    background-color: aqua;
+    font-size: .875rem;
+    border-radius: 30px;
+    margin-top: 20%;
+    margin-bottom: 30%;
+    height: 50px;
+}
+
+.info{
+    display: flex;
+    justify-content: space-between;
+}
+
+/*.column:nth-child(2){
+    height: 100%;
+}*//* 58.7%*/
+
+.demarrer{
+    width: 50%;
+    margin: 0 auto;
+    border-radius: 30px;
+}
+/* .retourDonnees, */
+.temperatureFour{
+    width: 30%;
+    border: #fff;
+    color: blue;
+}
+
+.choix::before, .choix::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+}
+
+
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    grid-auto-rows: minmax(100px, auto);
+}
+.un{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: row1-start;
+    grid-row-end: 2;
+}
+.deux{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    border: 4px;
+}
+.trois{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: row1-start;
+    grid-row-end: 3;
+}
+
+</style>
+
