@@ -81,7 +81,6 @@ const unsigned char Fire24x24_6 [] PROGMEM = {
 class MyOledViewWorking: public MyOledView {
     public:
         void init(std::string _id);
-        void init(std::string _id);
         
     
     protected:

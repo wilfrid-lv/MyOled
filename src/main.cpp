@@ -43,6 +43,15 @@ TemperatureStub *temperatureStub = NULL;
 float tempDuFour = 20;
 char buffer[100];
 
+MyOledViewWorking *myOledViewWorking = NULL;
+
+//Definition des éléments de l'ecran OLED
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET 4 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define OLED_I2C_ADDRESS 0x3C // Adresse I2C de l'écran Oled
+#define OLD_VEILLE_SECONDES 30  // Temps avant mise en veille de l'ecran Oled
+
 std::string CallBackMessageListener(string message) {
    while(replaceAll(message, std::string("  "), std::string(" ")));
   //Décortiquer le message
@@ -77,17 +86,8 @@ std::string CallBackMessageListener(string message) {
     return "";
  }
 
- MyOled *myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
-        myOled->init(OLED_I2C_ADDRESS);
-        myOled->veilleDelay(30); //En secondes
-
-
-        MyOledViewWorking * myOledViewWorking = NULL;
-        myOledViewWorking = new MyOledViewWorking();
-        myOledViewWorking->setNomDuSysteme(nomDuSysteme.c_str());
-        myOledViewWorking->setIpDuSysteme(WiFi.localIP().toString().c_str());
-        myOledViewWorking->setStatusDuSysteme("System OK");
-        myOled->displayView(myOledViewWorking);
+ #define nomDuSysteme "SAC System";
+ string idDuSysteme = "92834";
 
 
 void setup() {
@@ -137,11 +137,18 @@ void setup() {
   temperatureStub = new TemperatureStub;
   temperatureStub->init(DHTPIN, DHTTYPE);
 
-  myOledViewWorking = new MyOledViewWorking();
-        myOledViewWorking->setNomDuSysteme("nomDuSysteme");
-        myOledViewWorking->setIpDuSysteme(WiFi.localIP().toString().c_str());
-        myOledViewWorking->setStatusDuSysteme("Four OK");
-        myOled->displayView(myOledViewWorking);
+
+  MyOled *myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
+        myOled->init(OLED_I2C_ADDRESS);
+        myOled->veilleDelay(30); //En secondes
+
+ myOledViewWorking = new MyOledViewWorking();
+  myOledViewWorking->setParams("nomDuSysteme",nomDuSysteme);
+  // myOledViewWorking->setParams("idDuSysteme",idDuSysteme.c_str());
+  myOledViewWorking->setParams("idDuSysteme",ssIDRandom.c_str());
+  myOledViewWorking->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
+  myOledViewWorking->setParams("StatusDuSysteme","System OK");
+  myOled->displayView(myOledViewWorking);
 }
  
 void loop() {
@@ -173,9 +180,9 @@ void loop() {
   //   }
   // }
 
-  if ((myOled->veilleCheck()) cout << "\nEst en veille"){
-    myOled->veilleCheck();
-            myOled->updateCurrentView(myOledViewWorking); //Pour les animations dans la vue si utilisées
+  // if ((myOled->veilleCheck()) cout << "\nEst en veille"){
+  //   myOled->veilleCheck();
+  //           myOled->updateCurrentView(myOledViewWorking); //Pour les animations dans la vue si utilisées
 
-  }
+  // }
 }
