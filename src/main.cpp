@@ -13,6 +13,7 @@
 #include "MyOledViewWorkingOFF.h"
 #include "MyOledViewWifiAp.h"
 #include "MyOledViewWorkingCOLD.h"
+#include "MyOledViewWorkingHEAT.h"
 
 using namespace std;
 
@@ -49,6 +50,7 @@ char buffer[100];
 MyOledViewWorkingOFF *myOledViewWorkingOFF = NULL;
 MyOledViewWifiAp *myOledViewWifiAp = NULL;
 MyOledViewWorkingCOLD *myOledViewWorkingCOLD = NULL;
+MyOledViewWorkingHEAT *myOledViewWorkingHEAT = NULL;
 
 //Definition des éléments de l'ecran OLED
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -172,6 +174,14 @@ myOledViewWorkingCOLD = new MyOledViewWorkingCOLD();
   myOledViewWorkingCOLD->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
   myOledViewWorkingCOLD->setParams("StatusDuSysteme","System OK");
   //myOled->displayView(myOledViewWorkingCOLD);
+
+//mettre le timer en pause
+myOledViewWorkingHEAT = new MyOledViewWorkingHEAT();
+  myOledViewWorkingHEAT->setParams("nomDuSysteme",nomDuSysteme.c_str());
+  myOledViewWorkingHEAT->setParams("idDuSysteme",idDuSysteme.c_str());
+  myOledViewWorkingHEAT->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
+  myOledViewWorkingHEAT->setParams("StatusDuSysteme","System OK");
+  //myOled->displayView(myOledViewWorkingHEAT);
 }
  
 void loop() {
