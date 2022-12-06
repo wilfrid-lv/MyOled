@@ -44,9 +44,5 @@ void MyOledViewInitialisation::display( Adafruit_SSD1306 *adafruit) {
     adafruit->setCursor(0, 20);
     adafruit->print("Id: ");
     adafruit->print(idDuSysteme.c_str());
-    
-    // adafruit->setCursor(40, 50);
-    // adafruit->print(getTag("ipDuSysteme").c_str());
-    
     adafruit->display();
     }

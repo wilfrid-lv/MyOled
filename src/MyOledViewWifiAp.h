@@ -15,7 +15,7 @@
 #include <Adafruit_SSD1306.h>
 #include <string>
 
-class MyOledViewWifiAp : public MyOledViewWifi {
+class MyOledViewWifiAp : public MyOledView {
     public:
         void SetNomDuSysteme(std::string value);
         void SetSsIdDuSysteme(std::string value);
@@ -25,7 +25,7 @@ class MyOledViewWifiAp : public MyOledViewWifi {
     private:
         std::string NomDuSysteme;
         std::string ssIdDuSysteme;
-        std::string passDuSysteo;
+        std::string passDuSysteme;
         void update(Adafruit_SSD1306 *adafruit);
         void display( Adafruit_SSD1306 *adafruit);
 };

@@ -23,19 +23,9 @@
 #include <string>
 
 class MyOledViewWorkingOFF: public MyOledViewWorking {
-    public:
-        void init(std::string _id);
         
     
     protected:
         void display( Adafruit_SSD1306 *adafruit);
-        void update(Adafruit_SSD1306 *adafruit);
-
-        unsigned char *Fire24x24Pointers[6];
-
-        int indexFire = 1;
-        int indexFireDelay = 1;
-
-        void displayGifFire(Adafruit_SSD1306 *adafruitint, int positionX, int positionY); 
 };
 #endif

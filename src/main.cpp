@@ -10,6 +10,8 @@
 #include "MyServer.h" //Pour la gestion du serveur ESP32
 #include "MyOled.h"
 #include "MyOledViewWorking.h"
+#include "MyOledViewWorkingOFF.h"
+#include "MyOledViewWifiAp.h"
 
 using namespace std;
 
@@ -43,7 +45,8 @@ TemperatureStub *temperatureStub = NULL;
 float tempDuFour = 20;
 char buffer[100];
 
-MyOledViewWorking *myOledViewWorking = NULL;
+MyOledViewWorkingOFF *myOledViewWorkingOFF = NULL;
+MyOledViewWifiAp *myOledViewWifiAp = NULL;
 
 //Definition des éléments de l'ecran OLED
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -86,8 +89,11 @@ std::string CallBackMessageListener(string message) {
     return "";
  }
 
- #define nomDuSysteme "SAC System";
+ //#define nomDuSysteme "SAC System"
  string idDuSysteme = "92834";
+ string ssIdDuSysteme = "43829";
+ string nomDuSysteme = "SAC System";
+ string passDuSysteme = "Patate";
 
 
 void setup() {
@@ -104,7 +110,7 @@ void setup() {
   PASSRandom = PASSRandom + stringRandom;
 
   char strToPrint[128];
-  sprintf(strToPrint, "Identification : %s   MotDePasse: %s", ssIDRandom, PASSRandom);
+  sprintf(strToPrint, "Identification : %s   MotDePasse: %s", ssIDRandom.c_str(), PASSRandom.c_str());
   Serial.println(strToPrint);
 
   if (!wm.autoConnect(ssIDRandom.c_str(), PASSRandom.c_str())) {
@@ -142,13 +148,20 @@ void setup() {
         myOled->init(OLED_I2C_ADDRESS);
         myOled->veilleDelay(30); //En secondes
 
- myOledViewWorking = new MyOledViewWorking();
-  myOledViewWorking->setParams("nomDuSysteme",nomDuSysteme);
-  // myOledViewWorking->setParams("idDuSysteme",idDuSysteme.c_str());
-  myOledViewWorking->setParams("idDuSysteme",ssIDRandom.c_str());
-  myOledViewWorking->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
-  myOledViewWorking->setParams("StatusDuSysteme","System OK");
-  myOled->displayView(myOledViewWorking);
+myOledViewWifiAp = new MyOledViewWifiAp();
+  myOledViewWifiAp->SetNomDuSysteme(nomDuSysteme);
+  myOledViewWifiAp->SetSsIdDuSysteme(ssIdDuSysteme.c_str());
+  myOledViewWifiAp->SetPassDuSysteme(passDuSysteme.c_str());
+  myOled->displayView(myOledViewWifiAp);
+  //mettre un delay
+
+ myOledViewWorkingOFF = new MyOledViewWorkingOFF();
+  myOledViewWorkingOFF->setParams("nomDuSysteme",nomDuSysteme.c_str());
+  myOledViewWorkingOFF->setParams("idDuSysteme",idDuSysteme.c_str());
+  myOledViewWorkingOFF->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
+  myOledViewWorkingOFF->setParams("StatusDuSysteme","System OK");
+  //myOled->displayView(myOledViewWorkingOFF);
+
 }
  
 void loop() {
