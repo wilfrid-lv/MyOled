@@ -1,17 +1,21 @@
 /**
     Gestion d'une VUE pour le OLed : Base pour les écrans de travail
-    @file MyOledViewWorkingOFF.cpp
+    @file MyOledViewWorkingCold.cpp
     @author Alain Dubé
             Wilfrid Le Valégant
     @version 1.1 20/11/20 
 */
 #include <Arduino.h>
-#include "MyOledViewWorkingOFF.h"
+#include "MyOledViewWorkingCold.h"
 
 using namespace std;
 
-void MyOledViewWorkingOFF::display( Adafruit_SSD1306 *adafruit) {
-    Serial.println("MyOledViewWorkingOFF");
+void MyOledViewWorkingCOLD::update(Adafruit_SSD1306 *adafruit){
+    Serial.println("Update my view MyOledViewWifiCold");
+    }
+
+void MyOledViewWorkingCOLD::display( Adafruit_SSD1306 *adafruit) {
+    Serial.println("MyOledViewWorkingCOLD");
     adafruit->setTextColor(WHITE);
 
     adafruit->clearDisplay();
