@@ -32,6 +32,11 @@ void MyServer::initAllRoutes() {
         request->send(SPIFFS, "/home.html", "text/html");
     });
 
+    //Route pour l'image
+     this->on("/sac.png", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(SPIFFS, "/sac.png", "image/png");
+    });
+
     //Route du script JavaScript
     this->on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(SPIFFS, "/script.js", "text/javascript");

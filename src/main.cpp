@@ -9,6 +9,7 @@
 #include "TemperatureStub.h"
 #include "MyServer.h" //Pour la gestion du serveur ESP32
 #include "MyOled.h"
+#include "MyOledViewInitialisation.h"
 #include "MyOledViewWorking.h"
 #include "MyOledViewWorkingOFF.h"
 #include "MyOledViewWifiAp.h"
@@ -47,6 +48,7 @@ TemperatureStub *temperatureStub = NULL;
 float tempDuFour = 20;
 char buffer[100];
 
+MyOledViewInitialisation *myOledViewInitialisation = NULL;
 MyOledViewWorkingOFF *myOledViewWorkingOFF = NULL;
 MyOledViewWifiAp *myOledViewWifiAp = NULL;
 MyOledViewWorkingCOLD *myOledViewWorkingCOLD = NULL;
@@ -151,6 +153,14 @@ void setup() {
   MyOled *myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
         myOled->init(OLED_I2C_ADDRESS);
         myOled->veilleDelay(30); //En secondes
+
+myOledViewInitialisation = new MyOledViewInitialisation();
+  myOledViewInitialisation->SetNomDuSysteme(nomDuSysteme);
+  myOledViewInitialisation->setParams("idDuSysteme",idDuSysteme.c_str());
+  //myOledViewInitialisation->setParams("myButtonAction",myButtonAction.c_str());
+  //myOledViewInitialisation->setParams("myButtonReset",myButtonReset.c_str());
+  //myOled->displayView(myOledViewInitialisation);
+  //mettre un delay
 
 myOledViewWifiAp = new MyOledViewWifiAp();
   myOledViewWifiAp->SetNomDuSysteme(nomDuSysteme);

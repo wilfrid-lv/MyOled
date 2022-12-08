@@ -1,190 +1,181 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
+ 
 <head>
-  <meta charset="utf-8">
-  <title>SAC</title>
-  <!-- <link rel="stylesheet" href="style.css"> -->
-  <script src="script.js"></script>
+<script type = "text/javascript" src="script.js"> 
+    getNomBois();
+    getCaracteristiqueBois();
+    getlisteNomBois();
+</script>
 </head>
+
 <body>
-    <div class="contenant">
-        <div class="column">
-            <img class="fit-picture" src="sac.png"></img>
-            <h2 align='left'>Type de bois</h2>
-            <select name="typeBois" id="typeBois" class="choix">
-                <option value="erable">Erable</option>
-                <option value="bouleau">Bouleau</option>
-                <option value="sapin">Sapin</option>
-                <option value="chene">Chêne</option>
-            </select>
-            <h2 align='left'>Caractéristiques</h2>
-            <div class="box">
-                <span>
-                    <p>Bois :</p>
-                    <p type="text">Erable</p>
-                </span> 
-                <span>
-                    <p>Type :</p>
-                    <p type="text">dur</p>
-                </span>
-                <span>
-                    <p>Origine :</p>
-                    <p type="text">US</p>
-                </span>
-                <span>
-                    <p>Temps de séchage : </p>
-                    <p type="text">20s</p>
-                </span>
-                <span>
-                    <p>Température min : </p>
-                    <p type="text">25°C</p>
-                </span>
+    <img src="sac.png" width="200" height="100">
+
+    <h1> Type de Bois</h1>
+
+    <SELECT id="bois" size="1" class="choix"></SELECT>
+
+    <h1>Caracteristiques</h1>
+
+    <table style="border:solid;">
+        <tr>
+            <td>Bois</td>
+            <td>:</td>
+            <td id="nomDuBois"> </td>
+        </tr>
+        <tr>
+            <td>Type</td>
+            <td>:</td>
+            <td id="typeBois"></td>
+        </tr>
+        <tr>
+            <td>Origine </td>
+            <td>:</td>
+            <td id="origineBois"></td>
+        </tr>
+        <tr>
+            <td>Temps de sechage</td>
+            <td>:</td>
+            <td id="dryingBois"> </td>
+        </tr>
+        <tr>
+            <td>Temperature min</td>
+            <td>:</td>
+            <td id="tempMin"></td>
+        </tr>
+    </table>
+    <h3> Controle du four de sechage </h3>
+
+    <div class="block">
+        <div class="center">
+            <div>
+                <p style="margin-top: 3em"><strong>Temperature du four : </strong></p>
+                <br>
+                <p class='temperature' id="temp" name="temperature"></p>
+                <br>
             </div>
+            <button id="btnTemp" onclick="getTemp()" class="box">Demarrage du four</button>
         </div>
-        <div class="column">
-            <h2 align='left'>Contrôle du four de séchage</h2>
-            <div class="box">
-                <div>
-                    <p style="margin-top: 3em"><strong>Température du four : </strong></p>
-                    <p class='temperatureFour' id="temp" name="temperature"></p>
-                </div>
-                <button class="demarrer" type="button">Démarrage du four</button>
-                <div class="info">
-                    <span>
-                        <p type="text" class='retourDonnees' id="bois" name="bois">Erable</p>
-                    </span>
-                    <span>
-                        <p type="int" class='retourDonnees' id="tempRestant" name="tempRestant">0s</p>
-                    </span> 
-                    <span>
-                        <p type="int" class='retourDonnees' id="tempsSechage" name="tempsSechage">20s</p>
-                    </span> 
-                    <span>
-                        <p type="int" class='retourDonnees' id="tempMin" name="tempMin">25°C</p>
-                    </span>
-                </div>
-            </div>
+        <div class="ligne">
+            <p class="bleu"><span id="nomDuBois2"></span></p>
+            <p class="bleu"><span id="timer"></span>/<span id="dryingBois2"></span> Temps de sechage(sec)</p>
+            <p class="bleu">(min: <span id="tempMin2"></span> Celsuis)</p>
+
+            <p class="cercleRouge"></p>
+            <p class="cercleOrange"></p>
+            <p class="cercleVert"></p>
+
         </div>
     </div>
 </body>
+
+
 </html>
 
 <style>
-    *{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    body {
+        background-color: white;
+    }
 
-body{
-    height: 100vh;
-    padding: 1em;
-}
+    h1 {
+        color: black;
+        text-align:left;
+    }
 
-.contenant{
-    display: flex;
-    gap: 1em;
-    height: 85%;
-}
+    h2 {
+        width: 400px;
+        border: 3px solid black;
+        padding: 10px;
+        margin: 5px;
+        font-family: 'Times New Roman', Times;
+        font-weight: normal ;
+    }
 
-.box{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border: 2px solid;
-    height: 100%;
-}
+    .block{
+        width:500px;
+        height:375px;
+        position: fixed;
+        top: 6%;
+        left: 25%;
+        border: 5px solid black;
+        display : flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .center {
+        font-family: 'Times New Roman', Times;
+        font-weight: bold ;
+        text-align: center;
+        font-size: 24px;
+    }
 
-.box span{
-    display: flex;
-    justify-content: space-between;
-    height: 2em;
-    margin-right: 2em;
-}
-.box .info span{
-    display: flex;
-    justify-content: space-between;
-    height: 2em;
-}
+    h3{
+        position: fixed;
+        top: -1%;
+        left: 25%;
+        font-size: 24px;   
+    }
 
-.column{
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    gap: 1em;
-    width: 500px;
-    height: 60%;
-}
+    .celcuis{
+        color:blue;
+        text-align: center;
+    }
 
-.column select{
-    background-color: #F7C59F;
-    width: 90%;
-    margin-left: 5%;
-}
+    .choix{
+        background-color:#90EE90;
+        width: 300px;
+        height: 40px;
+        font-size: 24px;
+        border : solid;
+    }
 
-button{
-    background-color: aqua;
-    font-size: .875rem;
-    border-radius: 30px;
-    margin-top: 20%;
-    margin-bottom: 30%;
-    height: 50px;
-}
+    .box{
+        background-color: #ADD8E6;
+        font-size: 24px;
+        border-radius: 25px;
+        margin-left: 125px;
+        margin-right: 125px;
+    }
 
-.info{
-    display: flex;
-    justify-content: space-between;
-}
+    .right{
+        text-align: right;
+    }
 
-/*.column:nth-child(2){
-    height: 100%;
-}*//* 58.7%*/
+    .cercleRouge {
+        height: 10px;
+        width: 10px;
+        background-color : red;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: right;
+    }
 
-.demarrer{
-    width: 50%;
-    margin: 0 auto;
-    border-radius: 30px;
-}
-/* .retourDonnees, */
-.temperatureFour{
-    width: 30%;
-    border: #fff;
-    color: blue;
-}
+    .cercleOrange {
+        height: 10px;
+        width: 10px;
+        background-color : orange;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: right;
+    }
 
-.choix::before, .choix::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-}
+    .cercleVert {
+        height: 10px;
+        width: 10px;
+        background-color : green;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: right;
+    }
 
+    .ligne {
+        display: flex;
+        justify-content: space-between;
+    }
 
-
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    grid-auto-rows: minmax(100px, auto);
-}
-.un{
-    grid-column-start: 1;
-    grid-column-end: 2;
-    grid-row-start: row1-start;
-    grid-row-end: 2;
-}
-.deux{
-    grid-column-start: 1;
-    grid-column-end: 2;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    border: 4px;
-}
-.trois{
-    grid-column-start: 2;
-    grid-column-end: 3;
-    grid-row-start: row1-start;
-    grid-row-end: 3;
-}
-
+    .bleu{
+        color : blue;
+    }
 </style>
 
