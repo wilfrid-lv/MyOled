@@ -18,8 +18,11 @@
 
 using namespace std;
 
+WiFiClient client;
+HTTPClient http;
 WiFiManager wm;
 #define WEBSERVER_H
+#define woodApiRestAdress "http:/51.79.68.103:3000/api/woods/getAllWoods"
 
 MyServer *myServer = NULL;
 
@@ -52,11 +55,6 @@ TemperatureStub *temperatureStub = NULL;
 float tempDuFour = 20;
 char strTempFour[100];
 
-MyOledViewInitialisation *myOledViewInitialisation = NULL;
-MyOledViewWorkingOFF *myOledViewWorkingOFF = NULL;
-MyOledViewWifiAp *myOledViewWifiAp = NULL;
-MyOledViewWorkingCOLD *myOledViewWorkingCOLD = NULL;
-MyOledViewWorkingHEAT *myOledViewWorkingHEAT = NULL;
 
 //Definition des éléments de l'ecran OLED
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -64,6 +62,30 @@ MyOledViewWorkingHEAT *myOledViewWorkingHEAT = NULL;
 #define OLED_RESET 4 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define OLED_I2C_ADDRESS 0x3C // Adresse I2C de l'écran Oled
 #define OLD_VEILLE_SECONDES 30  // Temps avant mise en veille de l'ecran Oled
+
+MyOled *myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
+        
+MyOledViewInitialisation *myOledViewInitialisation = NULL;
+MyOledViewWorkingOFF *myOledViewWorkingOFF = NULL;
+MyOledViewWifiAp *myOledViewWifiAp = NULL;
+MyOledViewWorkingCOLD *myOledViewWorkingCOLD = NULL;
+MyOledViewWorkingHEAT *myOledViewWorkingHEAT = NULL;
+
+
+//#define nomDuSysteme "SAC System"
+string idDuSysteme = "92834";
+string ssIdDuSysteme = "43829";
+string nomDuSysteme = "SAC System";
+string etatDuSysteme = "Heating";
+string passDuSysteme = "Patate";
+string JsonListeBois;
+string JsonLeBois;
+int nbSecondes = 10;        
+char lesSecondes[100];
+float tempDemander = 24; 
+int tempsSechage = 10;
+int four = 0; //0=OFF ,1=HEAT ,2=COLD
+
 
 std::string CallBackMessageListener(string message) {
    while(replaceAll(message, std::string("  "), std::string(" ")));
@@ -98,7 +120,6 @@ std::string CallBackMessageListener(string message) {
     }
     return "";
 
-    // On va venir récupérer
   if (string(actionToDo.c_str()).compare(string("changement")) == 0) 
   {
       if(string(arg1.c_str()).compare(string("getTemp")) == 0) 
@@ -107,15 +128,68 @@ std::string CallBackMessageListener(string message) {
         return(String("Ok").c_str());
       }
   }
+    // Recupère la liste des bois.
+      if (string(actionToDo.c_str()).compare(string("askListeWood")) == 0) {
+          http.begin(client, woodApiRestAdress);
+          http.GET();
+          JsonListeBois = http.getString();
+          http.end();
+          return(JsonListeBois.c_str()); }
+
+  // Recupère les informations d'un bois.
+      if (string(actionToDo.c_str()).compare(string("afficherBois")) == 0) {
+          char buffer[100];
+          sprintf(buffer, "http:/51.79.68.103:3000/api/woods/getAllWoods/%S", arg1.c_str());
+          http.begin(client, buffer);
+            
+  http.addHeader("Authorization","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2Njg3ODUyMjF9.jhT6LpcaUyx5w0gXGldjC9TZxymvArrzvPt6GG2WukM");
+          http.GET();
+          JsonLeBois = http.getString();
+          http.end();
+          DynamicJsonDocument doc(2048);
+          deserializeJson(doc,JsonLeBois);
+          for(JsonObject elem : doc.as<JsonArray>()){
+            tempDemander = elem["temperature"];
+            tempsSechage = elem["dryingTime"];
+            nbSecondes = tempsSechage;
+          }
+          return(JsonLeBois.c_str()); } 
  }
 
- //#define nomDuSysteme "SAC System"
- string idDuSysteme = "92834";
- string ssIdDuSysteme = "43829";
- string nomDuSysteme = "SAC System";
- string etatDuSysteme = "Heating";
- string passDuSysteme = "Patate";
+ void RefreshMyOledParams(){
+  switch(four){
+      case 0:
+        //s'affiche avant que l'on appuie sur le bouton démarrage du four
+        myOledViewWorkingOFF = new MyOledViewWorkingOFF();
+        myOledViewWorkingOFF->setParams("nomDuSysteme",nomDuSysteme.c_str());
+        myOledViewWorkingOFF->setParams("idDuSysteme",idDuSysteme.c_str());
+        myOledViewWorkingHEAT->setParams("strTempFour",strTempFour);
+        myOledViewWorkingOFF->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
+        myOledViewWorkingOFF->setParams("StatusDuSysteme","System OK");
+        myOled->displayView(myOledViewWorkingOFF);
+        break;
 
+      case 1:
+        sprintf(strTempFour,"%g",tempDuFour);
+        myOledViewWorkingHEAT = new MyOledViewWorkingHEAT();
+        myOledViewWorkingHEAT->setParams("nomDuSysteme",nomDuSysteme.c_str());
+        myOledViewWorkingHEAT->setParams("idDuSysteme",idDuSysteme.c_str());
+        myOledViewWorkingHEAT->setParams("strTempFour",strTempFour);
+        myOledViewWorkingHEAT->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
+        myOledViewWorkingHEAT->setParams("StatusDuSysteme","System OK");
+        myOled->displayView(myOledViewWorkingHEAT);
+        break;
+
+      case 2:
+        myOledViewWorkingCOLD = new MyOledViewWorkingCOLD();
+        myOledViewWorkingCOLD->setParams("nomDuSysteme",nomDuSysteme.c_str());
+        myOledViewWorkingCOLD->setParams("idDuSysteme",idDuSysteme.c_str());
+        myOledViewWorkingCOLD->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
+        myOledViewWorkingCOLD->setParams("StatusDuSysteme","System OK");
+        myOled->displayView(myOledViewWorkingCOLD);
+        break;
+  }
+}
 
 void setup() {
   Serial.begin(9600);
@@ -129,6 +203,17 @@ void setup() {
   stringRandom = get_random_string(4).c_str();
   PASSRandom = PASSWORD;
   PASSRandom = PASSRandom + stringRandom;
+
+  //initialisation myOled
+  myOled->init(OLED_I2C_ADDRESS);
+  myOled->veilleDelay(30); //En secondes
+  myOledViewInitialisation = new MyOledViewInitialisation();
+  myOledViewInitialisation->setNomDuSysteme(nomSysteme);
+  myOledViewInitialisation->setIdDuSysteme(idSysteme.c_str());
+  myOledViewInitialisation->setSensibiliteBoutonAction(sensibiliteBoutonStart);
+  myOledViewInitialisation->setSensibiliteBoutonReset(sensibiliteBoutonReset);
+  myOled->displayView(myOledViewInit);
+
 
   char strToPrint[128];
   sprintf(strToPrint, "Identification : %s   MotDePasse: %s", ssIDRandom.c_str(), PASSRandom.c_str());
@@ -164,89 +249,79 @@ void setup() {
   temperatureStub = new TemperatureStub;
   temperatureStub->init(DHTPIN, DHTTYPE);
 
-
-  MyOled *myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
-        myOled->init(OLED_I2C_ADDRESS);
-        myOled->veilleDelay(30); //En secondes
-
-myOledViewInitialisation = new MyOledViewInitialisation();
-  myOledViewInitialisation->SetNomDuSysteme(nomDuSysteme);
-  myOledViewInitialisation->setParams("idDuSysteme",idDuSysteme.c_str());
-  //myOled->displayView(myOledViewInitialisation);
-  //mettre un delay
-
-//WifiAp s'affiche si il ne trouve pas le nom du réseau
-myOledViewWifiAp = new MyOledViewWifiAp();
+ //WifiAp s'affiche si il ne trouve pas le nom du réseau
+  myOledViewWifiAp = new MyOledViewWifiAp();
   myOledViewWifiAp->SetNomDuSysteme(nomDuSysteme);
   myOledViewWifiAp->SetSsIdDuSysteme(ssIdDuSysteme.c_str());
   myOledViewWifiAp->SetPassDuSysteme(passDuSysteme.c_str());
-  //myOled->displayView(myOledViewWifiAp);
-  //mettre un delay
+  myOled->displayView(myOledViewWifiAp);
+      
+ for (int i = 0; i < 2; i++){
+  digitalWrite(GPIO_PIN_LED_OK_VERT, HIGH);
+  delay(200);
+  digitalWrite(GPIO_PIN_LED_OK_VERT, LOW);
+  delay(100);
+  digitalWrite(GPIO_PIN_LED_OK_VERT, HIGH);
+  delay(200);
+  digitalWrite(GPIO_PIN_LED_OK_VERT, LOW);
+}
 
-//s'affiche avant que l'on appuie sur le bouton démarrage du four
- myOledViewWorkingOFF = new MyOledViewWorkingOFF();
-  myOledViewWorkingOFF->setParams("nomDuSysteme",nomDuSysteme.c_str());
-  myOledViewWorkingOFF->setParams("idDuSysteme",idDuSysteme.c_str());
-  myOledViewWorkingOFF->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
-  myOledViewWorkingOFF->setParams("StatusDuSysteme","System OK");
-  //myOled->displayView(myOledViewWorkingOFF);
-
-//if(le bouton demarrage du four est appuyer, demarrer et chauffer le four)//on ne peut pas faire tant que le bouton demarrer four ne marche pas
-//mettre le timer en pause
-sprintf(strTempFour,"%g",tempDuFour);
-myOledViewWorkingHEAT = new MyOledViewWorkingHEAT();
-  myOledViewWorkingHEAT->setParams("nomDuSysteme",nomDuSysteme.c_str());
-  myOledViewWorkingHEAT->setParams("idDuSysteme",idDuSysteme.c_str());
-  myOledViewWorkingHEAT->setParams("etatDuSysteme",etatDuSysteme.c_str());
-  myOledViewWorkingHEAT->setParams("strTempFour",strTempFour);
-  myOledViewWorkingHEAT->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
-  myOledViewWorkingHEAT->setParams("StatusDuSysteme","System OK");
-  myOled->displayView(myOledViewWorkingHEAT);
-
-//if(temperature<tempGoal){reniatiliser timer}elseif(temperature>tempMax){metttre le timer en pause}else(){laisser le timer se finir et afficher la temperature}
-//mettre le timer en pause lorsque la température du four est trop forte et le timer est réniatiliser si temp trop froide
-myOledViewWorkingCOLD = new MyOledViewWorkingCOLD();
-  myOledViewWorkingCOLD->setParams("nomDuSysteme",nomDuSysteme.c_str());
-  myOledViewWorkingCOLD->setParams("idDuSysteme",idDuSysteme.c_str());
-  myOledViewWorkingCOLD->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
-  myOledViewWorkingCOLD->setParams("StatusDuSysteme","System OK");
-  //myOled->displayView(myOledViewWorkingCOLD);
+ digitalWrite(GPIO_PIN_LED_HEAT_JAUNE,HIGH);
 
 }
 
  
 void loop() {
   tempDuFour = temperatureStub->getTemperature();
-  int i;
+  //int i;
 
   Serial.print("Température : ");
   Serial.println(tempDuFour);
   delay(5000);
- 
-  //Gestion du bouton Action
+
   // int buttonAction = myButtonAction->checkMyButton();
-  // if(buttonAction > 2)  {
-  //   if(t > 25)
-  //   {
-  //     Serial.println("Vous avez appuyé sur le bouton d'action ");
-  //     for (i = 0; i < 5; i++)
-  //     {
-  //       digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, HIGH);
-  //       delay(500);
-  //       digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, LOW);
-  //       delay(500);
-  //     }
-  //   }
-  //   else{
-  //     digitalWrite(GPIO_PIN_LED_HEAT_JAUNE, HIGH);
-  //     delay(3000);
-  //     digitalWrite(GPIO_PIN_LED_HEAT_JAUNE, LOW);
-  //   }
-  // }
+  // //mettre le bouton démarrage lorsque l'on pourra le récupérer et led qui clignote quand systeme affiche ready
+  // if(buttonAction > 2){
 
-  // if ((myOled->veilleCheck()) cout << "\nEst en veille"){
-  //   myOled->veilleCheck();
-  //           myOled->updateCurrentView(myOledViewWorking); //Pour les animations dans la vue si utilisées
+  // digitalWrite(GPIO_PIN_LED_OK_VERT, HIGH);
+  //        delay(200);
+  //        digitalWrite(GPIO_PIN_LED_OK_VERT, LOW);
+  //        delay(100);
+  //        digitalWrite(GPIO_PIN_LED_OK_VERT, HIGH);
+  //        delay(200);
+  //        digitalWrite(GPIO_PIN_LED_OK_VERT, LOW);
+ //}
 
-  // }
+int buttonAction = myButtonAction->checkMyButton();
+int temperature = temperatureStub->getTemperature();
+if(buttonAction > 2){
+  if(temperature > tempGoal && temperature < tempMax){
+    four = 1;
+    digitalWrite(GPIO_PIN_LED_HEAT_JAUNE,LOW);
+    digitalWrite(GPIO_PIN_LED_OK_VERT,HIGH);
+
+    sprintf(lesSecondes, "%i secondes.", nbSecondes);
+            nbSecondes--;
+            if(nbSecondes == 0){
+                buttonAction = 1;
+                nbSecondes = tempsSechage;
+                four = 0;
+                digitalWrite(GPIO_PIN_LED_OK_VERT,LOW);
+                digitalWrite(GPIO_PIN_LED_HEAT_JAUNE,HIGH);
+            }
+  }
+  if(temperature < tempGoal){
+    four = 2;
+    digitalWrite(GPIO_PIN_LED_HEAT_JAUNE,LOW);
+    digitalWrite(GPIO_PIN_LED_LOCK_ROUGE,HIGH);
+    nbSecondes = tempsSechage;
+  }
+  if(temperature > tempMax){
+    four = 2;
+    digitalWrite(GPIO_PIN_LED_HEAT_JAUNE,LOW);
+    digitalWrite(GPIO_PIN_LED_LOCK_ROUGE,HIGH);
+    nbSecondes = nbSecondes;
+  }
+}
+delay(2000);
 }

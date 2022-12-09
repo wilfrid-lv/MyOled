@@ -30,7 +30,7 @@ void MyOledViewWorkingHEAT::display( Adafruit_SSD1306 *adafruit) {
 
     adafruit->setTextSize(1);
     adafruit->setCursor(60, 20);
-    adafruit->print(getTag("etatDuSysteme").c_str());
+    adafruit->print("Heating");
 
     adafruit->setTextSize(2);
     adafruit->setCursor(30, 40);

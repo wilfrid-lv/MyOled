@@ -37,3 +37,8 @@ function getTemp()
     xhttp.send();
     alert("La température cible a été changé pour " + temperature)
 }
+
+//obtenir les type de bois depuis la bd pour les renvoyer sur la vue html
+function getBois(){
+
+}
