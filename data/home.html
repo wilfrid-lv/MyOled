@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+ 
+<head>
+<script type = "text/javascript" src="script.js"> 
+    getNomBois();
+    getCaracteristiqueBois();
+    getlisteNomBois();
+</script>
+</head>
+
+<body>
+    <img src="sac.png" width="200" height="100">
+
+    <h1> Type de Bois</h1>
+
+    <SELECT id="bois" size="1" class="choix"></SELECT>
+
+    <h1>Caracteristiques</h1>
+
+    <table style="border:solid;">
+        <tr>
+            <td>Bois</td>
+            <td>:</td>
+            <td id="nomDuBois"> </td>
+        </tr>
+        <tr>
+            <td>Type</td>
+            <td>:</td>
+            <td id="typeBois"></td>
+        </tr>
+        <tr>
+            <td>Origine </td>
+            <td>:</td>
+            <td id="origineBois"></td>
+        </tr>
+        <tr>
+            <td>Temps de sechage</td>
+            <td>:</td>
+            <td id="dryingBois"> </td>
+        </tr>
+        <tr>
+            <td>Temperature min</td>
+            <td>:</td>
+            <td id="tempMin"></td>
+        </tr>
+    </table>
+    <h3> Controle du four de sechage </h3>
+
+    <div class="block">
+        <div class="center">
+            <div>
+                <p style="margin-top: 3em"><strong>Temperature du four : </strong></p>
+                <br>
+                <p class='temperature' id="temp" name="temperature"></p>
+                <br>
+            </div>
+            <button id="btnTemp" onclick="getTemp()" class="box">Demarrage du four</button>
+        </div>
+        <div class="ligne">
+            <p class="bleu"><span id="nomDuBois2"></span></p>
+            <p class="bleu"><span id="timer"></span>/<span id="dryingBois2"></span> Temps de sechage(sec)</p>
+            <p class="bleu">(min: <span id="tempMin2"></span> Celsuis)</p>
+
+            <p class="cercleRouge"></p>
+            <p class="cercleOrange"></p>
+            <p class="cercleVert"></p>
+
+        </div>
+    </div>
+</body>
+
+
+</html>
+
+<style>
+    body {
+        background-color: white;
+    }
+
+    h1 {
+        color: black;
+        text-align:left;
+    }
+
+    h2 {
+        width: 400px;
+        border: 3px solid black;
+        padding: 10px;
+        margin: 5px;
+        font-family: 'Times New Roman', Times;
+        font-weight: normal ;
+    }
+
+    .block{
+        width:500px;
+        height:375px;
+        position: fixed;
+        top: 6%;
+        left: 25%;
+        border: 5px solid black;
+        display : flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .center {
+        font-family: 'Times New Roman', Times;
+        font-weight: bold ;
+        text-align: center;
+        font-size: 24px;
+    }
+
+    h3{
+        position: fixed;
+        top: -1%;
+        left: 25%;
+        font-size: 24px;   
+    }
+
+    .celcuis{
+        color:blue;
+        text-align: center;
+    }
+
+    .choix{
+        background-color:#90EE90;
+        width: 300px;
+        height: 40px;
+        font-size: 24px;
+        border : solid;
+    }
+
+    .box{
+        background-color: #ADD8E6;
+        font-size: 24px;
+        border-radius: 25px;
+        margin-left: 125px;
+        margin-right: 125px;
+    }
+
+    .right{
+        text-align: right;
+    }
+
+    .cercleRouge {
+        height: 10px;
+        width: 10px;
+        background-color : red;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: right;
+    }
+
+    .cercleOrange {
+        height: 10px;
+        width: 10px;
+        background-color : orange;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: right;
+    }
+
+    .cercleVert {
+        height: 10px;
+        width: 10px;
+        background-color : green;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: right;
+    }
+
+    .ligne {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .bleu{
+        color : blue;
+    }
+</style>
+
