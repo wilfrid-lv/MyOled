@@ -27,9 +27,12 @@ void MyOledViewWorkingCOLD::display( Adafruit_SSD1306 *adafruit) {
     adafruit->setCursor(0, 20);
     adafruit->print("Id: ");
     adafruit->print(getTag("idDuSysteme").c_str());
+
+    adafruit->setCursor(70, 20);
+    adafruit->print("Waiting");
     
-    // adafruit->setCursor(40, 50);
-    // adafruit->print(getTag("ipDuSysteme").c_str());
+    adafruit->setCursor(40, 50);
+    adafruit->print(getTag("ipDuSysteme").c_str());
     
     adafruit->display();
     }

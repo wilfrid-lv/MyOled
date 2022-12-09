@@ -40,7 +40,7 @@ int MyButton::autoSensibilisation() {
 
     /**
      * checkMyButton Teste si le bouton est activé et retourne le nombre de dixiemes de secondes 
-     *
+     *serat remplacé par le bouton de la vue html
      * 
      * @return int 0 : Si rien   NbreSec : Nbre de dixiemes de secondes que le bouton est appuye et relaché   Négatif:si le bouton est appuyé mais non relaché
      */
