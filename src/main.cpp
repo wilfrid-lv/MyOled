@@ -29,6 +29,10 @@ const char * PASSWORD = "sac_";
 String ssIDRandom;
 
 int temps = 0;
+//temperature min du four
+int tempGoal = 26;
+//temperature max du four
+int tempMax = tempGoal+(tempGoal*0.1);
 
 // Définition des LEDs
 #define GPIO_PIN_LED_LOCK_ROUGE 12 // Led Rouge GPIO12
@@ -46,7 +50,7 @@ MyButton *myButtonReset = NULL;
 TemperatureStub *temperatureStub = NULL;
 
 float tempDuFour = 20;
-char buffer[100];
+char strTempFour[100];
 
 MyOledViewInitialisation *myOledViewInitialisation = NULL;
 MyOledViewWorkingOFF *myOledViewWorkingOFF = NULL;
@@ -89,16 +93,27 @@ std::string CallBackMessageListener(string message) {
     // return(nomDuFour.c_str()); }
     
     if (string(actionToDo.c_str()).compare(string("askTempFour")) == 0) {
-        sprintf(buffer, "%4.1f C", tempDuFour);
-        return(buffer);
+        sprintf(strTempFour, "%4.1f C", tempDuFour);
+        return(strTempFour);
     }
     return "";
+
+    // On va venir récupérer
+  if (string(actionToDo.c_str()).compare(string("changement")) == 0) 
+  {
+      if(string(arg1.c_str()).compare(string("getTemp")) == 0) 
+      {
+        tempGoal = atoi(arg2.c_str());
+        return(String("Ok").c_str());
+      }
+  }
  }
 
  //#define nomDuSysteme "SAC System"
  string idDuSysteme = "92834";
  string ssIdDuSysteme = "43829";
  string nomDuSysteme = "SAC System";
+ string etatDuSysteme = "Heating";
  string passDuSysteme = "Patate";
 
 
@@ -157,19 +172,18 @@ void setup() {
 myOledViewInitialisation = new MyOledViewInitialisation();
   myOledViewInitialisation->SetNomDuSysteme(nomDuSysteme);
   myOledViewInitialisation->setParams("idDuSysteme",idDuSysteme.c_str());
-  //myOledViewInitialisation->setParams("myButtonAction",myButtonAction.c_str());
-  //myOledViewInitialisation->setParams("myButtonReset",myButtonReset.c_str());
   //myOled->displayView(myOledViewInitialisation);
   //mettre un delay
 
+//WifiAp s'affiche si il ne trouve pas le nom du réseau
 myOledViewWifiAp = new MyOledViewWifiAp();
   myOledViewWifiAp->SetNomDuSysteme(nomDuSysteme);
   myOledViewWifiAp->SetSsIdDuSysteme(ssIdDuSysteme.c_str());
   myOledViewWifiAp->SetPassDuSysteme(passDuSysteme.c_str());
-  myOled->displayView(myOledViewWifiAp);
+  //myOled->displayView(myOledViewWifiAp);
   //mettre un delay
 
-//lancer un timer 
+//s'affiche avant que l'on appuie sur le bouton démarrage du four
  myOledViewWorkingOFF = new MyOledViewWorkingOFF();
   myOledViewWorkingOFF->setParams("nomDuSysteme",nomDuSysteme.c_str());
   myOledViewWorkingOFF->setParams("idDuSysteme",idDuSysteme.c_str());
@@ -177,7 +191,20 @@ myOledViewWifiAp = new MyOledViewWifiAp();
   myOledViewWorkingOFF->setParams("StatusDuSysteme","System OK");
   //myOled->displayView(myOledViewWorkingOFF);
 
+//if(le bouton demarrage du four est appuyer, demarrer et chauffer le four)//on ne peut pas faire tant que le bouton demarrer four ne marche pas
 //mettre le timer en pause
+sprintf(strTempFour,"%g",tempDuFour);
+myOledViewWorkingHEAT = new MyOledViewWorkingHEAT();
+  myOledViewWorkingHEAT->setParams("nomDuSysteme",nomDuSysteme.c_str());
+  myOledViewWorkingHEAT->setParams("idDuSysteme",idDuSysteme.c_str());
+  myOledViewWorkingHEAT->setParams("etatDuSysteme",etatDuSysteme.c_str());
+  myOledViewWorkingHEAT->setParams("strTempFour",strTempFour);
+  myOledViewWorkingHEAT->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
+  myOledViewWorkingHEAT->setParams("StatusDuSysteme","System OK");
+  myOled->displayView(myOledViewWorkingHEAT);
+
+//if(temperature<tempGoal){reniatiliser timer}elseif(temperature>tempMax){metttre le timer en pause}else(){laisser le timer se finir et afficher la temperature}
+//mettre le timer en pause lorsque la température du four est trop forte et le timer est réniatiliser si temp trop froide
 myOledViewWorkingCOLD = new MyOledViewWorkingCOLD();
   myOledViewWorkingCOLD->setParams("nomDuSysteme",nomDuSysteme.c_str());
   myOledViewWorkingCOLD->setParams("idDuSysteme",idDuSysteme.c_str());
@@ -185,14 +212,8 @@ myOledViewWorkingCOLD = new MyOledViewWorkingCOLD();
   myOledViewWorkingCOLD->setParams("StatusDuSysteme","System OK");
   //myOled->displayView(myOledViewWorkingCOLD);
 
-//mettre le timer en pause
-myOledViewWorkingHEAT = new MyOledViewWorkingHEAT();
-  myOledViewWorkingHEAT->setParams("nomDuSysteme",nomDuSysteme.c_str());
-  myOledViewWorkingHEAT->setParams("idDuSysteme",idDuSysteme.c_str());
-  myOledViewWorkingHEAT->setParams("IpDuSysteme",WiFi.localIP().toString().c_str());
-  myOledViewWorkingHEAT->setParams("StatusDuSysteme","System OK");
-  //myOled->displayView(myOledViewWorkingHEAT);
 }
+
  
 void loop() {
   tempDuFour = temperatureStub->getTemperature();
@@ -200,7 +221,7 @@ void loop() {
 
   Serial.print("Température : ");
   Serial.println(tempDuFour);
-  delay(2000);
+  delay(5000);
  
   //Gestion du bouton Action
   // int buttonAction = myButtonAction->checkMyButton();

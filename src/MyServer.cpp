@@ -53,7 +53,7 @@ void MyServer::initAllRoutes() {
     //     request->send(200, "text/plain", lireNomDuFour );
     // });
 
-//mettre dans un intervalle pour la temperature
+    //mettre dans un intervalle pour la temperature
     this->on("/lireTemp", HTTP_GET, [](AsyncWebServerRequest *request) {
         std::string repString = "";
         if (ptrToCallBackFunction) repString = (*ptrToCallBackFunction)("askTempFour");
@@ -67,4 +67,46 @@ void MyServer::initAllRoutes() {
     });
 
     this->begin();
+
+    this->on("/getTemp", HTTP_GET, [](AsyncWebServerRequest *request){
+        AsyncResponseStream *response = request->beginResponseStream("text/html");
+        AsyncWebParameter* p = request->getParam(0);
+        char buffer[1024];
+
+        sprintf(buffer, "%s %s", "changement getTemp", p->value().c_str());
+
+        if (ptrToCallBackFunction) (*ptrToCallBackFunction) (buffer);
+        
+    });
 };
+
+//Appeler l API
+HTTPClient http;
+String woodApiRestAdress = "51.79.68.103:3000/api/woods/getAllWoods/"; //adresse web de l API
+woodApiRestAdress += wood; //nom de la BD
+http.begin(woodApiRestAdress);
+http.addHeader("Authorization", "");
+
+http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+int httpResponseCode = http.GET();
+Serial.print("HTTP Response code");
+Serial.println(httpResponseCode);
+
+String response;
+if(httpResponseCode){
+    response = http.getString();
+    Serial.println(response);
+}
+http.end();
+
+DynamicJsonDocument doc(2048);
+deserializeJson(doc, response);
+String tempToSend;
+for (JsonObject elem : doc.as<JsonArray>()){
+    String woodName         = elem["name"];
+    String woodType         = elem["type"];
+    String woodOrigin       = elem["origin"];
+    String woodDryingTime   = elem["dryingTime"];
+    String woodTemperature  = elem["temperature"];
+}
